@@ -1,18 +1,19 @@
-// Utils/gemini.js
-export async function generateGeminiContent(prompt) {
-  const response = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.REACT_APP_GEMINI_KEY,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-      }),
-    }
-  );
+import { GoogleGenAI } from "@google/genai";
 
-  const data = await response.json();
-  return data;
+const ai = new GoogleGenAI({
+  apiKey: process.env.REACT_APP_GEMINI_KEY,
+});
+
+export async function generateGeminiContent(prompt) {
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+
+    return response.text;
+  } catch (error) {
+    console.error("Gemini SDK Error:", error);
+    throw error;
+  }
 }
